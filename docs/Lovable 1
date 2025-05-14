@@ -1,0 +1,30 @@
+pip install gspread oauth2client
+
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+from datetime import datetime
+
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+creds = ServiceAccountCredentials.from_json_keyfile_name("seu_arquivo.json", scope)
+client = gspread.authorize(creds)
+
+sheet = client.open("IQ Option Banca").sheet1
+
+data = datetime.now().strftime("%d/%m/%Y %H:%M")
+banca = 325.50  
+lucro = 25.50   
+sheet.append_row([data, banca, lucro])
+
+from iqoptionapi.stable_api import IQ_Option
+import json
+import time
+
+email = "seu@email.com"
+senha = "sua_senha"
+IQ = IQ_Option(email, senha)
+IQ.connect()
+
+while True:
+    balance = IQ.get_balance()
+    print(json.dumps({"banca": balance}))
+    time.sleep(60) 
